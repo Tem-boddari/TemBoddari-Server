@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/Tem-boddari/TemBoddari-Server#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.0"
   },
   "devDependencies": {
     "dotenv": "^16.5.0",
