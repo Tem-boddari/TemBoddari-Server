@@ -1,0 +1,28 @@
+{
+  "name": "temboddari-server",
+  "version": "1.0.0",
+  "description": "🕹 [템보따리] 우리만의 공간에서 추천하고, 함께 사는 ‘템맛집’ 서비스",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tem-boddari/TemBoddari-Server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tem-boddari/TemBoddari-Server/issues"
+  },
+  "homepage": "https://github.com/Tem-boddari/TemBoddari-Server#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.5.0",
+    "nodemon": "^3.1.10"
+  }
+}
