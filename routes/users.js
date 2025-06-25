@@ -1,6 +1,7 @@
 var express = require("express");
 const User = require("../models/User");
-const { createToken, verifyToken } = require("../utils/auth");
+const authenticate = require("../middleware/auth");
+const { createToken } = require("../utils/token");
 var router = express.Router();
 
 /* GET users listing. */
@@ -11,12 +12,9 @@ router.get("/", function (req, res, next) {
 router.post("/signup", async (req, res, next) => {
   try {
     const { nickname, email, password } = req.body;
-    console.log(req.body);
     const user = await User.signUp(nickname, email, password);
-    res.status(201).json({
-      id: userObj._id,
-      email: userObj.email,
-    });
+    console.log("회원가입", user);
+    res.status(201).json(user);
   } catch (err) {
     console.error(err);
     res.status(400);
@@ -34,6 +32,7 @@ router.post("/login", async (req, res, next) => {
 
     const tokenMaxAge = 60 * 60 * 24 * 3;
     const tokenPayload = {
+      _id: user._id,
       email: user.email,
     };
     const token = createToken(tokenPayload, tokenMaxAge);
@@ -43,6 +42,7 @@ router.post("/login", async (req, res, next) => {
       httpOnly: true,
       maxAge: tokenMaxAge * 1000,
     });
+    console.log("로그인 성공", user.email);
     res.status(201).json({
       nickname: user.nickname,
       email: user.email,
@@ -60,7 +60,8 @@ router.all("/logout", async (req, res, next) => {
       httpOnly: true,
       expires: new Date(Date.now()),
     });
-    res.status(204).send();
+    console.log("로그아웃 성공");
+    res.status(200).send("logout Successful");
   } catch (err) {
     console.error(err);
     res.status(400);
@@ -68,20 +69,24 @@ router.all("/logout", async (req, res, next) => {
   }
 });
 
-async function authenticate(req, res, next) {
-  let token = req.cookies.authToken;
-  let headerToken = req.headers.authroization;
-  if (!token && headerToken) {
-    token = headerToken.split(" ")[1];
+router.get("/me", authenticate, async (req, res, next) => {
+  try {
+    const email = req.user.email;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+    res.status(200).json({
+      message: "인증됨",
+      user: {
+        email: user.email,
+        nickname: user.nickname,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 에러" });
   }
-  const user = verifyToken(token);
-  req.user = user;
-  if (!user) {
-    const error = new Error("Authroization Failed");
-    error.status = 403;
-    next(error);
-  }
-  next();
-}
+});
 
 module.exports = router;
