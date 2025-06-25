@@ -1,6 +1,7 @@
 // routes/recommends.js
 const express = require("express");
 const Recommendation = require("../models/Recommendation");
+const Like = require("../models/Like");
 
 const router = express.Router();
 
@@ -125,6 +126,96 @@ router.get("/:recommendId", async (req, res, next) => {
 
     console.log("상세 조회 완료:", recommendId);
     res.json({ message: "상세 조회 완료", recommend });
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+    next(err);
+  }
+});
+
+/**
+ * 추천 글 탐나요
+ * POST /api/recommends/:recommendId/likes
+ * Body: { user_id }
+ */
+router.post("/:recommendId/likes", async (req, res, next) => {
+  try {
+    const { recommendId } = req.params;
+    const { user_id } = req.body;
+
+    // 추천 글 존재 확인
+    const recommend = await Recommendation.findById(recommendId);
+    if (!recommend) {
+      console.log("탐나요 실패: 추천 글 없음", recommendId);
+      return res
+        .status(404)
+        .json({ message: "해당 추천 글을 찾을 수 없습니다." });
+    }
+
+    // 탐나요 생성
+    const like = await Like.create({
+      user_id,
+      recommendation_id: recommendId,
+    });
+
+    console.log("탐나요 완료:", like._id);
+    res.status(201).json({ message: "탐나요 완료", like });
+  } catch (err) {
+    // 이미 탐나요를 누른 경우
+    if (err.code === 11000) {
+      console.log(
+        "탐나요 실패: 중복",
+        req.params.recommendId,
+        req.body.user_id
+      );
+      return res.status(400).json({ message: "이미 탐나요를 눌렀습니다." });
+    }
+    console.error(err);
+    res.status(500);
+    next(err);
+  }
+});
+
+/**
+ * 추천 글 탐나요 취소
+ * DELETE /api/recommends/:recommendId/likes
+ * Body: { user_id }
+ */
+router.delete("/:recommendId/likes", async (req, res, next) => {
+  try {
+    const { recommendId } = req.params;
+    const { user_id } = req.body;
+
+    const deleted = await Like.findOneAndDelete({
+      user_id,
+      recommendation_id: recommendId,
+    });
+
+    if (!deleted) {
+      console.log("탐나요 취소 실패: 해당 좋아요 없음", recommendId, user_id);
+      return res.status(404).json({ message: "취소할 탐나요가 없습니다." });
+    }
+
+    console.log("탐나요 취소 완료:", recommendId, user_id);
+    res.json({ message: "탐나요 취소 완료" });
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+    next(err);
+  }
+});
+
+/**
+ * 특정 추천 글 좋아요 개수 조회
+ * GET /api/recommends/:recommendId/likes/count
+ */
+router.get("/:recommendId/likes/count", async (req, res, next) => {
+  try {
+    const { recommendId } = req.params;
+    const count = await Like.countDocuments({ recommendation_id: recommendId });
+
+    console.log("탐나요 개수 조회 완료:", recommendId, count);
+    res.json({ message: "탐나요 개수 조회 완료", count });
   } catch (err) {
     console.error(err);
     res.status(500);
