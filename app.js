@@ -5,6 +5,8 @@ const usersRouter = require("./routes/users");
 const groupsRouter = require("./routes/groups");
 const categoryRouter = require("./routes/category");
 const recommendRouter = require("./routes/recommends");
+
+const cors = require("cors");
 const mongoose = require("mongoose");
 const DB_URL =
   "mongodb+srv://pitapatsun:JyBVgDPw2HTXGacA@team-boddari.in7nfkt.mongodb.net/?retryWrites=true&w=majority&appName=Team-boddari";
@@ -20,10 +22,20 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
 const app = express();
 const port = process.env.PORT || 8080; // .env 파일의 PORT를 사용하거나, 없으면 3000번 사용
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 app.use(express.json());
+
 app.use("/api/auth", usersRouter);
 app.use("/api/groups", groupsRouter);
 app.use("/api/categories", categoryRouter);
@@ -41,6 +53,7 @@ app.use(function (err, req, res, next) {
   // res.render('error');
   res.json(res.locals);
 });
+
 app.listen(port, () => {
   console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });
