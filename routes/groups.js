@@ -50,6 +50,13 @@ router.post("/:groupId/join", authenticate, async function (req, res, next) {
 
     res.json(userGroup);
   } catch (err) {
+    if (err.code === 11000) {
+      console.log("이미 그룹에 가입되어 있습니다.");
+      return res
+        .status(409)
+        .json({ message: "이미 그룹에 가입되어 있습니다." });
+    }
+
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
   }
