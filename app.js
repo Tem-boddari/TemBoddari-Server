@@ -21,7 +21,7 @@ mongoose
     console.log(err);
   });
 const app = express();
-const port = process.env.PORT || 5000; // .env 파일의 PORT를 사용하거나, 없으면 3000번 사용
+const port = process.env.PORT || 8080; // .env 파일의 PORT를 사용하거나, 없으면 3000번 사용
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", usersRouter);
