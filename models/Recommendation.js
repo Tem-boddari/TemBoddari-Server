@@ -11,7 +11,6 @@ const recommendationSchema = new mongoose.Schema(
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true,
     },
     title: {
       type: String,
