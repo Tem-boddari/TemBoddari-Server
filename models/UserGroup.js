@@ -23,7 +23,6 @@ const userGroupSchema = new mongoose.Schema({
   },
 });
 
-// user_id + group_id 조합은 유일하도록 인덱스 설정 (복합 PK 역할)
-userGroupSchema.index({ user_id: 1, group_id: 1 }, { unique: true });
+userGroupSchema.index({ user_id: 1 }, { unique: true });
 
 module.exports = mongoose.model("UserGroup", userGroupSchema);
