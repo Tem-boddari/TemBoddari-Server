@@ -10,7 +10,7 @@ const groupSchema = new mongoose.Schema({
   },
   invitation_code: {
     type: String,
-    unique: true,
+    unique: false,
     trim: true,
   },
   created_at: {
