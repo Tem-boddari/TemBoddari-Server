@@ -20,8 +20,8 @@ const Image = require("../models/Image");
     console.log("[테스트] DB 연결 성공");
 
     // 1-1) 기존 데이터 초기화
-    await mongoose.connection.db.dropDatabase();
-    console.log("[테스트] DB 초기화 완료");
+    // await mongoose.connection.db.dropDatabase();
+    // console.log("[테스트] DB 초기화 완료");
 
     // 2) 카테고리 생성 테스트
     const category = await Category.create({ name: "테스트카테고리" });

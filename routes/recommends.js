@@ -4,15 +4,22 @@ const Recommendation = require("../models/Recommendation");
 const Like = require("../models/Like");
 
 const router = express.Router();
-
+const authenticate = require("../middleware/auth");
 /**
  * 추천 글 작성
- * POST /api/recommends
+ * POST /api/recommend
  */
-router.post("/", async (req, res, next) => {
+router.post("/", authenticate, async (req, res) => {
   try {
-    const { user_id, category_id, title, content, price, product_link } =
-      req.body;
+    // 1) user_id 중복 선언 제거
+    if (!req.user) {
+      return res.status(401).json({ message: "로그인이 필요합니다." });
+    }
+    const user_id = req.user._id; // 로그인된 유저
+
+    // 2) req.body에서 user_id 빼고 나머지만 구조 분해
+    const { category_id, title, content, price, product_link } = req.body;
+
     const recommend = await Recommendation.create({
       user_id,
       category_id,
@@ -22,18 +29,16 @@ router.post("/", async (req, res, next) => {
       product_link,
     });
 
-    console.log("작성 완료:", recommend._id);
     res.status(201).json({ message: "작성 완료", recommend });
   } catch (err) {
     console.error(err);
-    res.status(400);
-    next(err);
+    res.status(500).json({ message: "서버 오류" });
   }
 });
 
 /**
  * 추천 글 전체 조회
- * GET /api/recommends
+ * GET /api/recommend
  */
 router.get("/", async (req, res, next) => {
   try {
@@ -52,7 +57,7 @@ router.get("/", async (req, res, next) => {
 
 /**
  * 추천 글 수정
- * PUT /api/recommends/:recommendId
+ * PUT /api/recommend/:recommendId
  */
 router.put("/:recommendId", async (req, res, next) => {
   try {
