@@ -7,14 +7,15 @@ const groupsRouter = require("./routes/groups");
 const categoryRouter = require("./routes/category");
 const recommendRouter = require("./routes/recommends");
 
+const userGroupRoutes = require("./routes/usergroup");
+const groupbuyRoutes = require("./routes/groupbuys");
+
+const metaRouter = require("./routes/meta");
+
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-// Next.js SSR 배포
-const next = require("next");
 const dev = process.env.NODE_ENV !== "production";
-const nextApp = next({ dev, dir: "../TemBoddari-Client" });
-const handle = nextApp.getRequestHandler();
 
 /* DB 연결 */
 mongoose
@@ -50,6 +51,11 @@ app.use("/api/groups", groupsRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/recommend", recommendRouter);
 
+app.use("/api/usergroup", userGroupRoutes);
+app.use("/api/groupbuys", groupbuyRoutes);
+
+app.use("/api/meta", metaRouter);
+
 /* 기본 라우트 (Health Check) */
 app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
 
@@ -61,13 +67,8 @@ app.use(function (err, req, res, next) {
   });
 });
 
-/* Next.js 준비 후 서버 기동 */
-nextApp.prepare().then(() => {
-  // Next.js가 처리하지 않은 나머지 라우트
-  app.use((req, res) => handle(req, res));
-  app.listen(port, HOST, () => {
-    console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
-  });
+app.listen(port, HOST, () => {
+  console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
 });
 
 module.exports = app;
