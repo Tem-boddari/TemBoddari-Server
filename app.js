@@ -16,14 +16,8 @@ const metaRouter = require("./routes/meta");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-// Next.js SSR 배포
-const next = require("next");
+
 const dev = process.env.NODE_ENV !== "production";
-const nextApp = next({
-  dev,
-  dir: "C:/Users/campus3S018/Desktop/dev/TemBoddari-Client",
-});
-const handle = nextApp.getRequestHandler();
 
 /* DB 연결 */
 mongoose
@@ -77,13 +71,9 @@ app.use(function (err, req, res, next) {
   });
 });
 
-/* Next.js 준비 후 서버 기동 */
-nextApp.prepare().then(() => {
-  // Next.js가 처리하지 않은 나머지 라우트
-  app.use((req, res) => handle(req, res));
-  app.listen(port, HOST, () => {
-    console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
-  });
+app.listen(port, HOST, () => {
+  console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
 });
+
 
 module.exports = app;
