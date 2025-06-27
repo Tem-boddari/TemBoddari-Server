@@ -13,6 +13,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /srv/TemBoddari-Server
-            git pull origin main
+            cd /srv/temboddari
+            git fetch
+            git reset --hard origin/main
             pm2 restart temboddari
