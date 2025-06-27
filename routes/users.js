@@ -41,8 +41,8 @@ router.post("/login", async (req, res, next) => {
     res.cookie("authToken", token, {
       httpOnly: true,
       maxAge: tokenMaxAge * 1000,
-      sameSite: "none",
-      secure: true,
+      sameSite: "lax",
+      secure: false,
     });
     console.log("로그인 성공", user.email);
     res.status(201).json({
