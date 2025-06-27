@@ -1,6 +1,7 @@
 // routes/recommends.js
 const express = require("express");
 const Recommendation = require("../models/Recommendation");
+const UserGroup = require("../models/UserGroup");
 const Like = require("../models/Like");
 
 const router = express.Router();
@@ -35,6 +36,48 @@ router.post("/", authenticate, async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
+
+/**
+ * 로그인 한 유저가 있는 그룹의 데이터만 조회
+ * GET /api/recommend
+ */
+// router.get("/", authenticate, async (req, res, next) => {
+//   try {
+//     if (!req.user) {
+//       return res.status(401).json({ message: "로그인이 필요합니다." });
+//     }
+
+//     const currentUserId = req.user._id;
+//     console.log("현재 로그인 사용자 ID:", currentUserId);
+
+//     // 1. 현재 로그인한 사용자의 그룹 목록 조회
+//     const userGroups = await UserGroup.find({ user_id: currentUserId });
+//     if (!userGroups.length) {
+//       return res
+//         .status(200)
+//         .json({ message: "소속된 그룹이 없습니다.", recommends: [] });
+//     }
+
+//     const groupIds = userGroups.map((ug) => ug.group_id);
+//     console.log("소속 그룹 ID 목록:", groupIds);
+
+//     // 2. 해당 그룹에 속한 모든 사용자 ID 조회
+//     const usersInGroups = await UserGroup.find({ group_id: { $in: groupIds } });
+//     const userIds = usersInGroups.map((ug) => ug.user_id);
+//     console.log("같은 그룹 사용자 ID 목록:", userIds);
+
+//     // 3. 추천 글 조회 (같은 그룹 사용자들이 작성한 것만)
+//     const recommends = await Recommendation.find({ user_id: { $in: userIds } })
+//       .populate("user_id", "nickname email")
+//       .sort({ createdAt: -1 });
+
+//     console.log("추천 글 조회 완료:", recommends.length, "건");
+//     res.status(200).json({ message: "추천 글 조회 완료", recommends });
+//   } catch (err) {
+//     console.error("추천 글 조회 중 오류:", err);
+//     res.status(500).json({ message: "서버 오류가 발생했습니다." });
+//   }
+// });
 
 /**
  * 추천 글 전체 조회
@@ -86,14 +129,15 @@ router.put("/:recommendId", async (req, res, next) => {
 });
 
 /**
- * 추천 글 삭제
+ * 추천 글 삭제 + 관련 탐나요 삭제
  * DELETE /api/recommends/:recommendId
  */
 router.delete("/:recommendId", async (req, res, next) => {
   try {
     const { recommendId } = req.params;
-    const deleted = await Recommendation.findByIdAndDelete(recommendId);
 
+    // 1. 추천 글 삭제
+    const deleted = await Recommendation.findByIdAndDelete(recommendId);
     if (!deleted) {
       console.log("삭제 실패: 해당 ID 없음", recommendId);
       return res
@@ -101,7 +145,10 @@ router.delete("/:recommendId", async (req, res, next) => {
         .json({ message: "삭제할 추천 글을 찾을 수 없습니다." });
     }
 
-    console.log("삭제 완료:", recommendId);
+    // 2. 해당 추천 글에 달린 모든 '탐나요'도 삭제
+    await Like.deleteMany({ recommendation_id: recommendId });
+
+    console.log("추천 글 및 탐나요 삭제 완료:", recommendId);
     res.json({ message: "삭제 완료" });
   } catch (err) {
     console.error(err);

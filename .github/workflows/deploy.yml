@@ -1,0 +1,18 @@
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and deploy server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /srv/TemBoddari-Server
+            git pull origin main
+            pm2 restart temboddari

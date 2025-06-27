@@ -12,8 +12,10 @@ const groupbuyRoutes = require("./routes/groupbuys");
 
 const metaRouter = require("./routes/meta");
 
+
 const cors = require("cors");
 const mongoose = require("mongoose");
+
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -56,6 +58,8 @@ app.use("/api/groupbuys", groupbuyRoutes);
 
 app.use("/api/meta", metaRouter);
 
+
+
 /* 기본 라우트 (Health Check) */
 app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
 
@@ -70,5 +74,6 @@ app.use(function (err, req, res, next) {
 app.listen(port, HOST, () => {
   console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
 });
+
 
 module.exports = app;
