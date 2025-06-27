@@ -8,9 +8,9 @@ const authenticate = require("../middleware/auth");
  * 유저 ID를 기반으로 유저그룹 조회
  * GET /api/???
  */
-router.get("/:userId", authenticate, async (req, res) => {
-  const { userId } = req.params;
-
+router.get("/", authenticate, async (req, res) => {
+  const userId = req.user._id;
+  console.log("user", userId);
   try {
     const userGroups = await UserGroup.find({ user_id: userId })
       //.populate("group_id") // 그룹 정보까지 함께 가져오기
