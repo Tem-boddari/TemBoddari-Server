@@ -16,4 +16,14 @@ router.post("/", async function (req, res, next) {
   }
 });
 
+router.get("/", async function (req, res, next) {
+  try {
+    const categories = await Category.find({});
+    res.status(200).json(categories);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "카테고리 조회 실패" });
+  }
+});
+
 module.exports = router;
