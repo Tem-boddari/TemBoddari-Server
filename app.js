@@ -6,7 +6,12 @@ const usersRouter = require("./routes/users");
 const groupsRouter = require("./routes/groups");
 const categoryRouter = require("./routes/category");
 const recommendRouter = require("./routes/recommends");
+
+const userGroupRoutes = require("./routes/usergroup");
+const groupbuyRoutes = require("./routes/groupbuys");
+
 const metaRouter = require("./routes/meta");
+
 
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -14,7 +19,10 @@ const mongoose = require("mongoose");
 // Next.js SSR 배포
 const next = require("next");
 const dev = process.env.NODE_ENV !== "production";
-const nextApp = next({ dev, dir: "../TemBoddari-Client" });
+const nextApp = next({
+  dev,
+  dir: "C:/Users/campus3S018/Desktop/dev/TemBoddari-Client",
+});
 const handle = nextApp.getRequestHandler();
 
 /* DB 연결 */
@@ -50,7 +58,12 @@ app.use("/api/auth", usersRouter);
 app.use("/api/groups", groupsRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/recommend", recommendRouter);
+
+app.use("/api/usergroup", userGroupRoutes);
+app.use("/api/groupbuys", groupbuyRoutes);
+
 app.use("/api/meta", metaRouter);
+
 
 
 /* 기본 라우트 (Health Check) */
