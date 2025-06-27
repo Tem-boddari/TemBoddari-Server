@@ -1,47 +1,75 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-require("dotenv").config(); // .env 파일의 환경변수를 불러옴
+require("dotenv").config();
+
 const usersRouter = require("./routes/users");
 const groupsRouter = require("./routes/groups");
 const categoryRouter = require("./routes/category");
 const recommendRouter = require("./routes/recommends");
+const metaRouter = require("./routes/meta");
+
+const cors = require("cors");
 const mongoose = require("mongoose");
-const DB_URL =
-  "mongodb+srv://pitapatsun:JyBVgDPw2HTXGacA@team-boddari.in7nfkt.mongodb.net/?retryWrites=true&w=majority&appName=Team-boddari";
+
+// Next.js SSR 배포
+const next = require("next");
+const dev = process.env.NODE_ENV !== "production";
+const nextApp = next({ dev, dir: "../TemBoddari-Client" });
+const handle = nextApp.getRequestHandler();
+
+/* DB 연결 */
 mongoose
-  .connect(DB_URL, {
+  .connect(process.env.DB_URL, {
     retryWrites: true,
     w: "majority",
     appName: "Team-boddari",
   })
-  .then(() => {
-    console.log("Connected Successful");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  .then(() => console.log("Connected Successful"))
+  .catch((err) => console.log(err));
+
+/* Express 앱 */
 const app = express();
-const port = process.env.PORT || 8080; // .env 파일의 PORT를 사용하거나, 없으면 3000번 사용
+const port = process.env.PORT || 8080;
+const HOST = process.env.HOST || "0.0.0.0";
+
+/* CORS */
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_ORIGIN];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+/* 공통 미들웨어 */
 app.use(cookieParser());
 app.use(express.json());
+
+/* API 라우터 */
 app.use("/api/auth", usersRouter);
 app.use("/api/groups", groupsRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/recommend", recommendRouter);
-app.get("/", (req, res) => {
-  res.send("Hello from my Express server!");
-});
-// error handler
+app.use("/api/meta", metaRouter);
+
+/* 기본 라우트 (Health Check) */
+app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
+
+/* 에러 핸들러 */
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-  // render the error page
-  res.status(err.status || 500);
-  // res.render('error');
-  res.json(res.locals);
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: dev ? err : {},
+  });
 });
-app.listen(port, () => {
-  console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
+
+/* Next.js 준비 후 서버 기동 */
+nextApp.prepare().then(() => {
+  // Next.js가 처리하지 않은 나머지 라우트
+  app.use((req, res) => handle(req, res));
+  app.listen(port, HOST, () => {
+    console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
+  });
 });
+
 module.exports = app;
