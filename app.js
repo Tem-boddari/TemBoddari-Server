@@ -52,6 +52,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/recommend", recommendRouter);
 app.use("/api/meta", metaRouter);
 
+
 /* 기본 라우트 (Health Check) */
 app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
 
