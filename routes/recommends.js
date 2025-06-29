@@ -19,7 +19,8 @@ router.post("/", authenticate, async (req, res) => {
     const user_id = req.user._id; // 로그인된 유저
 
     // 2) req.body에서 user_id 빼고 나머지만 구조 분해
-    const { category_id, title, content, price, product_link } = req.body;
+    const { category_id, title, content, price, product_link, image_url } =
+      req.body;
 
     const recommend = await Recommendation.create({
       user_id,
@@ -28,6 +29,7 @@ router.post("/", authenticate, async (req, res) => {
       content,
       price,
       product_link,
+      image_url,
     });
 
     res.status(201).json({ message: "작성 완료", recommend });

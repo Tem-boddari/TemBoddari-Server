@@ -11,11 +11,10 @@ const userGroupRoutes = require("./routes/usergroup");
 const groupbuyRoutes = require("./routes/groupbuys");
 
 const metaRouter = require("./routes/meta");
-
+const uploadRouter = require("./routes/upload");
 
 const cors = require("cors");
 const mongoose = require("mongoose");
-
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -47,6 +46,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
+// 정적 파일 서빙 설정
+app.use("/uploads", express.static("uploads"));
+
 /* API 라우터 */
 app.use("/api/auth", usersRouter);
 app.use("/api/groups", groupsRouter);
@@ -57,8 +59,7 @@ app.use("/api/usergroup", userGroupRoutes);
 app.use("/api/groupbuys", groupbuyRoutes);
 
 app.use("/api/meta", metaRouter);
-
-
+app.use("/api/upload", uploadRouter);
 
 /* 기본 라우트 (Health Check) */
 app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
@@ -74,6 +75,5 @@ app.use(function (err, req, res, next) {
 app.listen(port, HOST, () => {
   console.log(`🌐 Server + SSR running at http://${HOST}:${port}`);
 });
-
 
 module.exports = app;
