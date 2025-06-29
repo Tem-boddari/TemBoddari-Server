@@ -41,62 +41,62 @@ router.post("/", authenticate, async (req, res) => {
  * 로그인 한 유저가 있는 그룹의 데이터만 조회
  * GET /api/recommend
  */
-// router.get("/", authenticate, async (req, res, next) => {
-//   try {
-//     if (!req.user) {
-//       return res.status(401).json({ message: "로그인이 필요합니다." });
-//     }
+router.get("/", authenticate, async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "로그인이 필요합니다." });
+    }
 
-//     const currentUserId = req.user._id;
-//     console.log("현재 로그인 사용자 ID:", currentUserId);
+    const currentUserId = req.user._id;
+    console.log("현재 로그인 사용자 ID:", currentUserId);
 
-//     // 1. 현재 로그인한 사용자의 그룹 목록 조회
-//     const userGroups = await UserGroup.find({ user_id: currentUserId });
-//     if (!userGroups.length) {
-//       return res
-//         .status(200)
-//         .json({ message: "소속된 그룹이 없습니다.", recommends: [] });
-//     }
+    // 1. 현재 로그인한 사용자의 그룹 목록 조회
+    const userGroups = await UserGroup.find({ user_id: currentUserId });
+    if (!userGroups.length) {
+      return res
+        .status(200)
+        .json({ message: "소속된 그룹이 없습니다.", recommends: [] });
+    }
 
-//     const groupIds = userGroups.map((ug) => ug.group_id);
-//     console.log("소속 그룹 ID 목록:", groupIds);
+    const groupIds = userGroups.map((ug) => ug.group_id);
+    console.log("소속 그룹 ID 목록:", groupIds);
 
-//     // 2. 해당 그룹에 속한 모든 사용자 ID 조회
-//     const usersInGroups = await UserGroup.find({ group_id: { $in: groupIds } });
-//     const userIds = usersInGroups.map((ug) => ug.user_id);
-//     console.log("같은 그룹 사용자 ID 목록:", userIds);
+    // 2. 해당 그룹에 속한 모든 사용자 ID 조회
+    const usersInGroups = await UserGroup.find({ group_id: { $in: groupIds } });
+    const userIds = usersInGroups.map((ug) => ug.user_id);
+    console.log("같은 그룹 사용자 ID 목록:", userIds);
 
-//     // 3. 추천 글 조회 (같은 그룹 사용자들이 작성한 것만)
-//     const recommends = await Recommendation.find({ user_id: { $in: userIds } })
-//       .populate("user_id", "nickname email")
-//       .sort({ createdAt: -1 });
+    // 3. 추천 글 조회 (같은 그룹 사용자들이 작성한 것만)
+    const recommends = await Recommendation.find({ user_id: { $in: userIds } })
+      .populate("user_id", "nickname email")
+      .sort({ createdAt: -1 });
 
-//     console.log("추천 글 조회 완료:", recommends.length, "건");
-//     res.status(200).json({ message: "추천 글 조회 완료", recommends });
-//   } catch (err) {
-//     console.error("추천 글 조회 중 오류:", err);
-//     res.status(500).json({ message: "서버 오류가 발생했습니다." });
-//   }
-// });
+    console.log("추천 글 조회 완료:", recommends.length, "건");
+    res.status(200).json({ message: "추천 글 조회 완료", recommends });
+  } catch (err) {
+    console.error("추천 글 조회 중 오류:", err);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
 
 /**
  * 추천 글 전체 조회
  * GET /api/recommend
  */
-router.get("/", async (req, res, next) => {
-  try {
-    const recommends = await Recommendation.find().populate(
-      "user_id",
-      "nickname email"
-    );
-    console.log("전체 조회 완료: 총", recommends.length, "건");
-    res.json({ message: "전체 조회 완료", recommends });
-  } catch (err) {
-    console.error(err);
-    res.status(500);
-    next(err);
-  }
-});
+// router.get("/", async (req, res, next) => {
+//   try {
+//     const recommends = await Recommendation.find().populate(
+//       "user_id",
+//       "nickname email"
+//     );
+//     console.log("전체 조회 완료: 총", recommends.length, "건");
+//     res.json({ message: "전체 조회 완료", recommends });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500);
+//     next(err);
+//   }
+// });
 
 /**
  * 추천 글 수정
