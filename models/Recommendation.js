@@ -29,6 +29,10 @@ const recommendationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    image_url: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: {
