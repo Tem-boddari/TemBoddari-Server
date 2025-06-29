@@ -18,4 +18,4 @@ jobs:
             git fetch
             git reset --hard origin/main
             npm install
-            pm2 restart temboddari
+            pm2 restart temboddari --update-env
