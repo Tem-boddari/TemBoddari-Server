@@ -1,9 +1,38 @@
 const express = require("express");
-const GroupPurchase = require("../models/GroupPurchase");
-
 const router = express.Router();
 const authenticate = require("../middleware/auth");
+
+const GroupPurchase = require("../models/GroupPurchase");
 const UserGroup = require("../models/UserGroup");
+const Participant = require("../models/Participant");
+
+// 공구 상태 갱신 함수
+async function updateGroupbuyStatus(groupbuy) {
+  if (groupbuy.status !== "진행중") return groupbuy;
+
+  console.log("상태 갱신 실행 중 ");
+  const now = new Date();
+
+  // 현재 참여자 수 확인
+  const participantCount = await Participant.countDocuments({
+    group_purchase_id: groupbuy._id,
+  });
+
+  if (participantCount >= groupbuy.max_participants) {
+    groupbuy.status = "성공";
+    await groupbuy.save();
+    return groupbuy;
+  }
+
+  // 마감일이 지났고 참여자 미달인 경우
+  if (now > groupbuy.end_date) {
+    groupbuy.status = "실패"; // 또는 "실패" 등 원하시는 명칭
+    await groupbuy.save();
+  }
+
+  return groupbuy;
+}
+
 /**
  * 공구 생성
  * POST /api/groupbuys
@@ -40,6 +69,7 @@ router.post("/", authenticate, async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
+
 /**
  * 로그인 한 유저가 속한 그룹의 사용자들이 개설한 공구만 조회
  * GET /api/groupbuys
@@ -72,10 +102,13 @@ router.get("/", authenticate, async (req, res) => {
     console.log("같은 그룹 사용자 ID 목록:", userIds);
 
     // 3. 해당 유저들이 만든 공구만 조회
-    const groupbuys = await GroupPurchase.find({ user_id: { $in: userIds } })
+    let groupbuys = await GroupPurchase.find({ user_id: { $in: userIds } })
       .populate("user_id", "nickname email")
       .populate("recommendation_id", "title")
       .sort({ createdAt: -1 });
+
+    // ✅ 상태 확인 및 갱신 추가
+    groupbuys = await Promise.all(groupbuys.map(updateGroupbuyStatus));
 
     console.log("공구 조회 완료:", groupbuys.length, "건");
     res.status(200).json({ message: "공구 조회 완료", groupbuys });
@@ -112,13 +145,16 @@ router.get("/:groupbuyId", async (req, res, next) => {
   try {
     const { groupbuyId } = req.params;
 
-    const groupbuy = await GroupPurchase.findById(groupbuyId)
+    let groupbuy = await GroupPurchase.findById(groupbuyId)
       .populate("user_id", "nickname email")
       .populate("recommendation_id", "title");
 
     if (!groupbuy) {
       return res.status(404).json({ message: "해당 공구를 찾을 수 없습니다." });
     }
+
+    // ✅ 상태 갱신 추가
+    groupbuy = await updateGroupbuyStatus(groupbuy);
 
     res.json({ message: "공구 상세 조회 완료", groupbuy });
   } catch (err) {
