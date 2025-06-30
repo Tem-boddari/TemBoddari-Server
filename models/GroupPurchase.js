@@ -48,6 +48,12 @@ const groupPurchaseSchema = new mongoose.Schema(
       required: true,
     },
 
+    // 상세 내용
+    content: {
+      type: String,
+      required: true,
+    },
+
     // 상태: 진행중, 성공, 실패, 취소
     status: {
       type: String,
