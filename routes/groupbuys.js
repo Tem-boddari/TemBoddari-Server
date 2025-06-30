@@ -51,6 +51,7 @@ router.post("/", authenticate, async (req, res) => {
       original_price,
       max_participants,
       end_date,
+      content,
     } = req.body;
 
     const groupbuy = await GroupPurchase.create({
@@ -61,6 +62,7 @@ router.post("/", authenticate, async (req, res) => {
       original_price,
       max_participants,
       end_date,
+      content,
     });
 
     res.status(201).json({ message: "공구 생성 완료", groupbuy });
@@ -117,25 +119,6 @@ router.get("/", authenticate, async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
-
-/**
- * 전체 공구 목록 조회
- * GET /api/groupbuys
- */
-// router.get("/", async (req, res, next) => {
-//   try {
-//     const groupbuys = await GroupPurchase.find()
-//       .populate("user_id", "nickname email")
-//       .populate("recommendation_id", "title");
-
-//     console.log("공구 전체 조회 완료:", groupbuys.length, "건");
-//     res.json({ message: "전체 공구 조회 완료", groupbuys });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500);
-//     next(err);
-//   }
-// });
 
 /**
  * 공구 상세 조회
