@@ -163,7 +163,7 @@ router.delete("/:recommendId", async (req, res, next) => {
  * 추천 글 상세 조회
  * GET /api/recommends/:recommendId
  */
-router.get("/:recommendId", async (req, res, next) => {
+router.get("/:recommendId", authenticate, async (req, res, next) => {
   try {
     const { recommendId } = req.params;
     const recommend = await Recommendation.findById(recommendId).populate(
@@ -178,8 +178,24 @@ router.get("/:recommendId", async (req, res, next) => {
         .json({ message: "해당 추천 글을 찾을 수 없습니다." });
     }
 
+    const likeCount = await Like.countDocuments({
+      recommendation_id: recommendId,
+    });
+
+    let isLikedByMe = false;
+    if (req.user) {
+      const myLike = await Like.findOne({
+        recommendation_id: recommendId,
+        user_id: req.user._id,
+      });
+      isLikedByMe = !!myLike;
+    }
+
     console.log("상세 조회 완료:", recommendId);
-    res.json({ message: "상세 조회 완료", recommend });
+    res.json({
+      message: "상세 조회 완료",
+      recommend: { ...recommend.toObject(), likeCount, isLikedByMe },
+    });
   } catch (err) {
     console.error(err);
     res.status(500);
