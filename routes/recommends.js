@@ -166,10 +166,9 @@ router.delete("/:recommendId", async (req, res, next) => {
 router.get("/:recommendId", authenticate, async (req, res, next) => {
   try {
     const { recommendId } = req.params;
-    const recommend = await Recommendation.findById(recommendId).populate(
-      "user_id",
-      "nickname email"
-    );
+    const recommend = await Recommendation.findById(recommendId)
+      .populate("user_id", "nickname email")
+      .populate("category_id");
 
     if (!recommend) {
       console.log("상세 조회 실패: 해당 ID 없음", recommendId);
