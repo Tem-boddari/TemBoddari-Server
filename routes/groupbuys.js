@@ -108,7 +108,21 @@ router.get("/", authenticate, async (req, res) => {
       .sort({ createdAt: -1 });
 
     // ✅ 상태 확인 및 갱신 추가
-    groupbuys = await Promise.all(groupbuys.map(updateGroupbuyStatus));
+    groupbuys = await Promise.all(
+      groupbuys.map(async (groupbuy) => {
+        const updated = await updateGroupbuyStatus(groupbuy);
+
+        // ✅ 참여자 수 추가
+        const participantCount = await Participant.countDocuments({
+          group_purchase_id: groupbuy._id,
+        });
+
+        return {
+          ...updated.toObject(), // 객체화
+          participants: participantCount, // ✅ 포함
+        };
+      })
+    );
 
     console.log("공구 조회 완료:", groupbuys.length, "건");
     res.status(200).json({ message: "공구 조회 완료", groupbuys });
@@ -153,10 +167,19 @@ router.get("/:groupbuyId", async (req, res, next) => {
       return res.status(404).json({ message: "해당 공구를 찾을 수 없습니다." });
     }
 
-    // ✅ 상태 갱신 추가
     groupbuy = await updateGroupbuyStatus(groupbuy);
 
-    res.json({ message: "공구 상세 조회 완료", groupbuy });
+    const participantCount = await Participant.countDocuments({
+      group_purchase_id: groupbuy._id,
+    });
+
+    res.json({
+      message: "공구 상세 조회 완료",
+      groupbuy: {
+        ...groupbuy.toObject(),
+        participants: participantCount, // ✅ 포함
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500);
