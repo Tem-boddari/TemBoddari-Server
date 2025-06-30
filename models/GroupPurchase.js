@@ -54,6 +54,11 @@ const groupPurchaseSchema = new mongoose.Schema(
       required: false,
     },
 
+    image_url: {
+      type: String,
+      required: false,
+    },
+
     // 상태: 진행중, 성공, 실패, 취소
     status: {
       type: String,
