@@ -28,6 +28,7 @@ router.post("/signup", async (req, res) => {
     res.status(201).json({
       success: true,
       user: {
+        id: user._id,
         nickname: user.nickname,
         email: user.email,
       },
@@ -84,6 +85,7 @@ router.post("/login", async (req, res) => {
       // 201 Created가 아니라 200 OK가 더 적절
       success: true,
       user: {
+        id: user._id,
         nickname: user.nickname,
         email: user.email,
       },
@@ -129,6 +131,7 @@ router.get("/me", authenticate, async (req, res) => {
     res.status(200).json({
       success: true,
       user: {
+        id: user._id,
         email: user.email,
         nickname: user.nickname,
       },
