@@ -52,6 +52,27 @@ router.get("/", async (req, res) => {
   }
 });
 
+// 공구 참여 상태 확인 (추가)
+router.get("/status", authenticate, async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    const { group_purchase_id } = req.query;
+
+    if (!group_purchase_id) {
+      return res
+        .status(400)
+        .json({ message: "group_purchase_id가 필요합니다." });
+    }
+
+    const exists = await Participant.findOne({ user_id, group_purchase_id });
+
+    res.status(200).json({ isParticipating: !!exists });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
 // 공구 참여 취소
 router.delete("/", authenticate, async (req, res) => {
   try {
