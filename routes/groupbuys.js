@@ -52,6 +52,7 @@ router.post("/", authenticate, async (req, res) => {
       max_participants,
       end_date,
       content,
+      image_url,
     } = req.body;
 
     const groupbuy = await GroupPurchase.create({
@@ -63,6 +64,7 @@ router.post("/", authenticate, async (req, res) => {
       max_participants,
       end_date,
       content,
+      image_url,
     });
 
     res.status(201).json({ message: "공구 생성 완료", groupbuy });
