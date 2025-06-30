@@ -62,4 +62,21 @@ router.post("/:groupId/join", authenticate, async function (req, res, next) {
   }
 });
 
+// 그룹 ID로 상세 정보 조회하기
+router.get("/:groupId", authenticate, async function (req, res, next) {
+  try {
+    const { groupId } = req.params;
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    res.json(group);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
