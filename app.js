@@ -12,6 +12,7 @@ const groupbuyRoutes = require("./routes/groupbuys");
 
 const metaRouter = require("./routes/meta");
 const uploadRouter = require("./routes/upload");
+const participantRouter = require("./routes/participants");
 
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -60,6 +61,8 @@ app.use("/api/groupbuys", groupbuyRoutes);
 
 app.use("/api/meta", metaRouter);
 app.use("/api/upload", uploadRouter);
+
+app.use("/api/participants", participantRouter);
 
 /* 기본 라우트 (Health Check) */
 app.get("/health", (_, res) => res.send("OK")); // 기존 ‘/’는 Next가 처리
