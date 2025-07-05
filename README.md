@@ -12,7 +12,7 @@
 | :---: | :---: | :---: | :---: |
 | PM, Full-Stack, Infra | Full-Stack | Full-Stack | Design, Full-Stack |
 | <img src="https://avatars.githubusercontent.com/u/86948824?v=4" alt="김지수 프로필" width="180" height="180"> | <img src="https://github.com/user-attachments/assets/5090cbd2-9798-4776-ac2f-c6c8abdce005" alt="김태헌 프로필" width="180" height="180"> | <img src="https://github.com/user-attachments/assets/566743ca-11b2-4eda-a2f8-4bf59ed7df86" alt="박순영 프로필" width="180" height="180"> | <img src="https://github.com/user-attachments/assets/5cddbbee-c285-43fb-b68d-66dcc0de1d82" alt="지민선 프로필" width="180" height="180"> |
-| [slay1379]([https://github.com/Jixoo-IT](https://github.com/slay1379)) | [Jixoo-IT](https://github.com/Jixoo-IT) | [ruluralaa](https://github.com/ruluralaa) | [jiminseon](https://github.com/jiminseon) |
+| [Jixoo-IT](https://github.com/Jixoo-IT) | [slay1379](https://github.com/slay1379) | [ruluralaa](https://github.com/ruluralaa) | [jiminseon](https://github.com/jiminseon) |
 
 
 ### 개발 기간
