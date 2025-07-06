@@ -105,3 +105,5 @@ https://github.com/user-attachments/assets/8e178f82-b3ff-4cf5-b23a-0afe285b9f19
 #### 아키텍처
 ![image](https://github.com/user-attachments/assets/85de6dd5-6c72-46a8-93d5-27806a297156)
 
+#### Figma
+![image](https://github.com/user-attachments/assets/f471f510-d186-4c79-917f-3160bd0f58a1)
